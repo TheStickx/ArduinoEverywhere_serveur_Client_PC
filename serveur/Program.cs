@@ -87,7 +87,7 @@ public class StateObject
                 DonneesRecues = DonneesRecues.Substring(iFinContenu + 1);
 
                 // Selon l'etiquette on fait un truc
-                if (Etiquette == " Message cool")
+                if (Etiquette == "Message cool")
                 {
                     // affiche pour le fun
                     Console.WriteLine(Etiquette + "=>" + Contenu);
@@ -106,6 +106,11 @@ public class StateObject
                 iDebutContenu = DonneesRecues.IndexOf(">=<");
                 if (iDebutContenu >= 0) iFinContenu = DonneesRecues.IndexOf(">", iDebutContenu + 3);
             }
+        }
+        
+        public void test()
+        {
+            return;
         }
 
         public String MessageHexToTabDeByte(String MessageARecoder)
