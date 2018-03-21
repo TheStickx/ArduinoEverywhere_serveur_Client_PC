@@ -33,12 +33,7 @@ public class StateObject
         public EnumConnectionStyle ConnectionStyle;
         public bool AcceptMulticonn;
     }
-
-    // Received data string.
-    //public StringBuilder sb = new StringBuilder();
-
-    //public class EnCodeDecode
-
+    
 
     private
     String DonneesRecues;
@@ -56,7 +51,7 @@ public class StateObject
         {
 
             Tempi = (int)sMessageAReformuler.Substring(i, 1).ToCharArray()[0];
-            ConnerieTemporaire = String.Format("{0,10:X2}", Tempi).Trim();  //.Trim()
+            ConnerieTemporaire = String.Format("{0,10:X2}", Tempi).Trim();
             messageReformate += " " + ConnerieTemporaire;  //Integer.toHexString(sMessageAReformuler.contenu[i]);
         }
         messageReformate += ">";
@@ -96,8 +91,6 @@ public class StateObject
             if (Etiquette == "message hexa")
             {
                 // affiche pour le fun
-                //Console::WriteLine(Etiquette + "=>" + Contenu);
-                //Console::WriteLine(Etiquette + ">>" + MessageHexToTabDeByte(Contenu));
                 Console.Write(MessageHexToTabDeByte(Contenu));
 
             }
@@ -106,11 +99,6 @@ public class StateObject
             iDebutContenu = DonneesRecues.IndexOf(">=<");
             if (iDebutContenu >= 0) iFinContenu = DonneesRecues.IndexOf(">", iDebutContenu + 3);
         }
-    }
-
-    public void test()
-    {
-        return;
     }
 
     public String MessageHexToTabDeByte(String MessageARecoder)
@@ -140,9 +128,6 @@ public class StateObject
 
 public class AsynchronousSocketListener
 {
-    // Thread signal.
-    //public static ManualResetEvent allDone = new ManualResetEvent(false);
-    //public static ManualResetEvent SendDone = new ManualResetEvent(false);
     private const int NmaxStObjects = 10;
     private static StateObject[] InfoConnection = new StateObject[NmaxStObjects];
     Socket listener;
@@ -154,16 +139,14 @@ public class AsynchronousSocketListener
     public void StartListening()
     {
         // on initialise tout les StObjects 
-        // WhichStObjectAmI = N° d'indice Ainsi quand on le récupère dans les callback on a leur indice
-        // ConnectionStyle = .....NA; => par défaut n'a pas de connection. voir définition de StateObject.EnumConnectionStyle
         for (int i = 0; i < NmaxStObjects; i++)
         {
             InfoConnection[i] = new StateObject();
+            // ConnectionStyle = .....NA; => par défaut n'a pas de connection. voir définition de StateObject.EnumConnectionStyle
             InfoConnection[i].ConnectionStyle = StateObject.EnumConnectionStyle.NA;
+            // WhichStObjectAmI = N° d'indice Ainsi quand on le récupère dans les callback on a leur indice
             InfoConnection[i].WhichStObjectAmI = i;
         }
-        // Data buffer for incoming data.
-        byte[] bytes = new Byte[1024];
 
         // Establish the local endpoint for the socket.
         // The DNS name of the computer
@@ -186,31 +169,21 @@ public class AsynchronousSocketListener
             while (true)
             {
                 // Set the event to nonsignaled state.
-                //allDone.Reset();
 
                 // Start an asynchronous socket to listen for connections.
                 Console.WriteLine("Waiting for first connection...");
 
                 ShouldIAcceptNewConnexion(); // nouvelle méthode pour begin accept plus soupple
-                /*listener.BeginAccept(
-                    new AsyncCallback(AcceptCallback),
-                    listener);*/
-
 
                 // Wait until a connection is made before continuing.
-                //allDone.WaitOne();
                 while (true)
-                //while (InfoConnection[0].workSocket.Connected)
                 {
                     //if (InfoConnection[0].workSocket.Connected && Console.KeyAvailable)
                     if (Console.KeyAvailable)
                     {
                         venantDeLaConsole = Console.ReadLine();
                         RepeatToOthers(StateObject.EnumConnectionStyle.Undefine, venantDeLaConsole);
-                        //Send(InfoConnection[0].workSocket, venantDeLaConsole);
                     }
-                    //Send(listener, venantDeLaConsole);
-                    //allDone.Reset();
                 }
 
 
@@ -306,29 +279,15 @@ public class AsynchronousSocketListener
         state.workSocket = handler;
 
         // Create the state object.
-        /*
-        InfoConnection[0] = new StateObject
-        {
-            workSocket = handler , 
-            buffer = new byte[StateObject.BufferSize]
-        };*/
-        //InfoConnection[0] = new StateObject();
         StObjectNumber = FreeStObjectNumber();
         InfoConnection[StObjectNumber].workSocket = handler;
         InfoConnection[StObjectNumber].ConnectionStyle = StateObject.EnumConnectionStyle.Undefine; // au début on sait pas mais du coups plus NA
         Console.WriteLine("\nnouvelle connection avec {0}\n", handler.RemoteEndPoint.ToString());
-        // Signal the main thread to continue.
-        //allDone.Set();
 
         handler.BeginReceive(InfoConnection[StObjectNumber].buffer, 0, StateObject.BufferSize, 0,
             new AsyncCallback(ReadCallback), InfoConnection[StObjectNumber]);
 
         ShouldIAcceptNewConnexion();  // d'ici on autorise à accepter de nouvelles connexions
-        /*
-        handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
-            new AsyncCallback(ReadCallback), state);*/
-
-
     }
 
     public void ReadCallback(IAsyncResult ar)
@@ -360,32 +319,6 @@ public class AsynchronousSocketListener
                 // il faut toujours reprogrammer le call back
                 handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
                     new AsyncCallback(ReadCallback), state);
-                {
-                    /*
-                    // ---------------------------
-
-                    // nonn je fait plus comme ça maintenant c'est une trame de 0 octets qui
-                    // provoque la fermeture
-                    //
-                    // Check for end-of-file tag. If it is not there, read 
-                    // more data.
-                    //content = state.sb.ToString();
-                    if (content.IndexOf("<EOF>") > -1)
-                    {
-                        // All the data has been read from the 
-                        // client. Display it on the console.
-                        Console.WriteLine("Read {0} bytes from socket. \n Data : {1}",
-                            content.Length, content);
-                        // Echo the data back to the client.
-                        //Send(handler, content);
-                    }
-                    else
-                    {
-                        // Not all data received. Get more.
-                        handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
-                        new AsyncCallback(ReadCallback), state);
-                    } */
-                }
             }
             else
             {
@@ -405,72 +338,24 @@ public class AsynchronousSocketListener
 
     private static void Send(Socket handler, String data)
     {
-
-        //SendDone.Set();
         // Convert the string data to byte data using ASCII encoding.
         data += "\r\n";
         byte[] byteData = Encoding.ASCII.GetBytes(data);
 
         // Begin sending the data to the remote device.
-        //handler.Send(byteData);
 
         handler.BeginSend(byteData, 0, byteData.Length, 0,
             new AsyncCallback(SendCallback), handler);
-        //SendDone.Reset();
-        //SendDone.WaitOne();
-        /*
-        handler.BeginSend(InfoConnection[0].buffer, 0, InfoConnection[0].buffer.Length, 0,
-                    new AsyncCallback(SendCallback), InfoConnection[0].workSocket);
-                    */
-        //SendDone.WaitOne();
     }
 
     private static void SendCallback(IAsyncResult ar)
     {
         try
         {
-            //SendDone.Set();
-            //SendDone.Reset();
-            // Retrieve the socket from the state object.
-            //StateObject state = (StateObject)ar.AsyncState;
-            //Socket handler = state.workSocket;
             Socket handler = (Socket)ar.AsyncState;
 
             // Complete sending the data to the remote device.
             int bytesSent = handler.EndSend(ar);
-            {
-                //int bytesSent = handler.EndSend(InfoConnection[0].workSocket);
-                //Console.WriteLine("Sent {0} bytes to client.", bytesSent);
-                //SendDone.Reset();
-                //handler.Shutdown(SocketShutdown.Both);
-                //handler.Close();
-                /*
-                if ( bytesSent > 0 )
-                {
-                    byte[] Saloperie = new Byte[1];
-                    handler.BeginSend(Saloperie, 0, 1, 0,
-                            new AsyncCallback(SendCallback), handler);
-                }*/
-
-                //handler.SendPacketsAsync
-                /*
-                if (!InfoConnection[0].bEnvoye)
-                {
-                    handler.BeginSend(InfoConnection[0].buffer, 0, InfoConnection[0].buffer.Length, 0,
-                            new AsyncCallback(SendCallback), handler);  //StateObject.BufferSize
-                    InfoConnection[0].bEnvoye = true;
-                }
-            handler.BeginSend(InfoConnection[0].buffer, 0, InfoConnection[0].buffer.Length, 0,
-                    new AsyncCallback(SendCallback), handler);  //StateObject.BufferSize
-                */
-            }
-
-            /*
-    handler.BeginSend(InfoConnection[0].buffer, 0, InfoConnection[0].buffer.Length, 0,
-                new AsyncCallback(SendCallback), InfoConnection[0].workSocket);*/
-
-
-
         }
         catch (Exception e)
         {
