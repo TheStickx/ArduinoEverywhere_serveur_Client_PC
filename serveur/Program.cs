@@ -13,117 +13,20 @@ public class StateObject
     public const int BufferSize = 1024;
     // Receive buffer.
     public byte[] buffer = new byte[BufferSize];
-    public bool bEnvoye = true;
+    //public bool bEnvoye = true;
 
     //----------------------------------------------------------------------
     // utilisation de cet enum
     // NA           - utilisé lors du retour de la fonction ProcessReception: signifie Rien à signaler 
     //          ou comme quoi le message ne permet pas de conclure qu'on change de connection type
-    //          Si WhichStObjectAmI a cette valeur cela veu dire qu'il est libre
+    //          Si ConnectionStyle a cette valeur cela veu dire qu'il est libre
     // Undefine     - état par défaut lors de la création du state obbject
     // Application  - ProcessReception a recu une demande claire du client pour stypuler qu'il est 'Application'
     // Arduino      - ProcessReception a recu une demande claire du client pour stypuler qu'il est 'Arduino'
     public enum EnumConnectionStyle { NA, Undefine, Application, Arduino };
     public EnumConnectionStyle ConnectionStyle;
     public int WhichStObjectAmI;
-
-    // ProcessReception retournera cat objet
-    public class ProcessReturn
-    {
-        public EnumConnectionStyle ConnectionStyle;
-        public bool AcceptMulticonn;
-    }
-    
-
-    private
-    String DonneesRecues;
-
-    public String StringToHex(String sMessageAReformuler)
-    {
-        int i, iMessageAreformulerTaille, Tempi;
-        String messageReformate = "<message hexa>=<";// = gcnew  String("<message hexa>=");
-        String ConnerieTemporaire;
-        //= "<message hexa>=";
-
-        iMessageAreformulerTaille = sMessageAReformuler.Length;
-
-        for (i = 0; i < iMessageAreformulerTaille; i++)
-        {
-
-            Tempi = (int)sMessageAReformuler.Substring(i, 1).ToCharArray()[0];
-            ConnerieTemporaire = String.Format("{0,10:X2}", Tempi).Trim();
-            messageReformate += " " + ConnerieTemporaire;  //Integer.toHexString(sMessageAReformuler.contenu[i]);
-        }
-        messageReformate += ">";
-        return messageReformate;
-    }
-
-    public void ProcessReception(String Reception)
-    {
-        int iDebutEtiquette, iDebutContenu, iFinContenu;
-        String Etiquette, Contenu;
-
-        // ajoutons ce qu'on viens de recevoir à ce qu'on a déjà.
-        // voyons ensuite si on sait le traiter.
-        DonneesRecues += Reception;
-
-        iDebutEtiquette = DonneesRecues.IndexOf("<");
-        iDebutContenu = DonneesRecues.IndexOf(">=<");
-        if (iDebutContenu >= 0) iFinContenu = DonneesRecues.IndexOf(">", iDebutContenu + 3);
-        else iFinContenu = -1;
-        // si on a pas d'étiquette complette ou de contenu complet.
-        // on sort ce sera la prochaine fois
-        while ((iDebutEtiquette >= 0) && (iDebutContenu > 0) && (iFinContenu > 0))
-        {
-            // on a une étiquette
-            Etiquette = DonneesRecues.Substring(iDebutEtiquette + 1, iDebutContenu - iDebutEtiquette - 1);
-            Contenu = DonneesRecues.Substring(iDebutContenu + 3, iFinContenu - iDebutContenu - 3);
-            //On rétrécis le Contenu de ce qui est traité
-            DonneesRecues = DonneesRecues.Substring(iFinContenu + 1);
-
-            // Selon l'etiquette on fait un truc
-            if (Etiquette == "Message cool")
-            {
-                // affiche pour le fun
-                Console.WriteLine(Etiquette + "=>" + Contenu);
-
-            }
-            if (Etiquette == "message hexa")
-            {
-                // affiche pour le fun
-                Console.Write(MessageHexToTabDeByte(Contenu));
-
-            }
-
-            iDebutEtiquette = DonneesRecues.IndexOf("<");
-            iDebutContenu = DonneesRecues.IndexOf(">=<");
-            if (iDebutContenu >= 0) iFinContenu = DonneesRecues.IndexOf(">", iDebutContenu + 3);
-        }
-    }
-
-    public String MessageHexToTabDeByte(String MessageARecoder)
-    {
-        int iPosition, iLongeurMessageARecoder, i;
-        String sMessageHexa = "";
-        char cOctet;
-
-        iPosition = 0;
-        iLongeurMessageARecoder = MessageARecoder.Length;
-
-        while (iPosition < iLongeurMessageARecoder)
-        {
-            cOctet = (char)Convert.ToInt32
-                    (MessageARecoder.Substring(iPosition, 2), 16);
-
-            //tMessageHexa.contenu[iDansContenu] = (byte)Integer.parseInt(sOctet, 16);
-            sMessageHexa += cOctet;
-
-            iPosition += 2;
-        }
-
-        return sMessageHexa;
-    }
-
+    public bool MultiConnexion;
 }
 
 public class AsynchronousSocketListener
@@ -141,11 +44,13 @@ public class AsynchronousSocketListener
         // on initialise tout les StObjects 
         for (int i = 0; i < NmaxStObjects; i++)
         {
-            InfoConnection[i] = new StateObject();
-            // ConnectionStyle = .....NA; => par défaut n'a pas de connection. voir définition de StateObject.EnumConnectionStyle
-            InfoConnection[i].ConnectionStyle = StateObject.EnumConnectionStyle.NA;
-            // WhichStObjectAmI = N° d'indice Ainsi quand on le récupère dans les callback on a leur indice
-            InfoConnection[i].WhichStObjectAmI = i;
+            InfoConnection[i] = new StateObject
+            {
+                // ConnectionStyle = .....NA; => par défaut n'a pas de connection. voir définition de StateObject.EnumConnectionStyle
+                ConnectionStyle = StateObject.EnumConnectionStyle.NA,
+                // WhichStObjectAmI = N° d'indice Ainsi quand on le récupère dans les callback on a leur indice
+                WhichStObjectAmI = i
+            };
         }
 
         // Establish the local endpoint for the socket.
@@ -178,16 +83,15 @@ public class AsynchronousSocketListener
                 // Wait until a connection is made before continuing.
                 while (true)
                 {
-                    //if (InfoConnection[0].workSocket.Connected && Console.KeyAvailable)
-                    if (Console.KeyAvailable)
+                    /* if (InfoConnection[0].workSocket.Connected && Console.KeyAvailable)
                     {
-                        venantDeLaConsole = Console.ReadLine();
-                        RepeatToOthers(StateObject.EnumConnectionStyle.Undefine, venantDeLaConsole);
-                    }
+                        if (Console.KeyAvailable)
+                        {*/
+                            venantDeLaConsole = Console.ReadLine();
+                            RepeatToOthers(StateObject.EnumConnectionStyle.Undefine, venantDeLaConsole);
+                        /*}
+                    }*/
                 }
-
-
-
             }
 
         }
@@ -275,8 +179,10 @@ public class AsynchronousSocketListener
         Socket handler = listener.EndAccept(ar);
         int StObjectNumber;
 
-        StateObject state = new StateObject();
-        state.workSocket = handler;
+        StateObject state = new StateObject
+        {
+            workSocket = handler
+        };
 
         // Create the state object.
         StObjectNumber = FreeStObjectNumber();
@@ -313,12 +219,7 @@ public class AsynchronousSocketListener
                 //    state.buffer, 0, bytesRead));
                 // ---------------------------
                 // Ma routine
-                state.ProcessReception(content);
-                RepeatToOthers(state.ConnectionStyle, content);
-                // ---------------------------
-                // il faut toujours reprogrammer le call back
-                handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
-                    new AsyncCallback(ReadCallback), state);
+                ProcessReception( state.WhichStObjectAmI , content);
             }
             else
             {
@@ -371,6 +272,167 @@ public class AsynchronousSocketListener
         InfoConnection[State.WhichStObjectAmI].ConnectionStyle = StateObject.EnumConnectionStyle.NA;
     }
 
+    private String DonneesRecues;
+
+    public void ProcessReception( int THatStObjetct, String Reception)
+    {
+        int iDebutEtiquette, iDebutContenu, iFinContenu;
+        String Etiquette, Contenu;
+        bool DontShutThis = true;
+
+        // ajoutons ce qu'on viens de recevoir à ce qu'on a déjà.
+        // voyons ensuite si on sait le traiter.
+        DonneesRecues += Reception;
+
+        iDebutEtiquette = DonneesRecues.IndexOf("<");
+        iDebutContenu = DonneesRecues.IndexOf(">=<");
+        if (iDebutContenu >= 0) iFinContenu = DonneesRecues.IndexOf(">", iDebutContenu + 3);
+        else iFinContenu = -1;
+        // si on a pas d'étiquette complette ou de contenu complet.
+        // on sort ce sera la prochaine fois
+        while ((iDebutEtiquette >= 0) && (iDebutContenu > 0) && (iFinContenu > 0))
+        {
+            // on a une étiquette
+            Etiquette = DonneesRecues.Substring(iDebutEtiquette + 1, iDebutContenu - iDebutEtiquette - 1);
+            Contenu = DonneesRecues.Substring(iDebutContenu + 3, iFinContenu - iDebutContenu - 3);
+            //On rétrécis le Contenu de ce qui est traité
+            DonneesRecues = DonneesRecues.Substring(iFinContenu + 1);
+
+            // Selon l'etiquette on fait un truc
+
+            if (Etiquette == "client description")
+            {
+                String Temp;
+                int PositionEspace;
+                bool Multi, MultiOk, SideOk;
+                StateObject.EnumConnectionStyle Side;
+
+                try
+                {
+                    PositionEspace = Contenu.IndexOf(" ");
+                    if (PositionEspace >= 0)
+                    {
+                        Temp = Contenu.Substring(0, PositionEspace);
+                        Contenu = Contenu.Substring(PositionEspace + 1, Contenu.Length - PositionEspace -1);
+
+                        if ((Temp.Substring(0, 5) == "side=") && (Contenu.Substring(0, 9) == "multicon="))
+                        {
+                            MultiOk = false;
+                            SideOk = false;
+                            Side = StateObject.EnumConnectionStyle.NA;
+                            Multi = true;
+
+                            // side
+                            if (Temp == "side=arduino_side")
+                            {
+                                Side = StateObject.EnumConnectionStyle.Arduino;
+                                SideOk = true;
+                            }
+                            if (Temp == "side=application_side")
+                            {
+                                Side = StateObject.EnumConnectionStyle.Application;
+                                SideOk = true;
+                            }
+
+                            // MultiCon
+                            if (Contenu == "multicon=Ok")
+                            {
+                                Multi = true;
+                                MultiOk = true;
+                            }
+                            if (Contenu == "multicon=Nok")
+                            {
+                                Multi = false;
+                                MultiOk = true;
+
+                                // doit détecter si une autre connexion est déjà en cours 
+                                // => si oui on ferme et on ne reconfigure pas le call back
+                                // idem MultiOk repasse à false 
+                                for (int i = 0; i < NmaxStObjects; i++)
+                                {
+                                    if (InfoConnection[i].ConnectionStyle == Side)
+                                    {
+                                        Shut(InfoConnection[i]);
+                                        DontShutThis = false;
+                                        Console.WriteLine("La connexion N°{0} est refusé car Multicon=NOK\n", THatStObjetct);
+                                        MultiOk = false;
+                                    }
+                                }
+                            }
+
+                            // Tout est défini 
+                            if ( SideOk && MultiOk )
+                            {
+                                InfoConnection[THatStObjetct].MultiConnexion = Multi;
+                                InfoConnection[THatStObjetct].ConnectionStyle = Side;
+
+                                Console.WriteLine("La connexion N°{0} est acceptée\n", THatStObjetct);
+                            }
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.ToString());
+                }
+            }
+
+            if (Etiquette == "Message cool")
+            {
+                // affiche pour le fun
+                Console.WriteLine(Etiquette + "=>" + Contenu);
+                RepeatToOthers( InfoConnection[THatStObjetct].ConnectionStyle , "<" + Etiquette + ">=<" + Contenu + ">");
+            }
+
+            if (Etiquette == "message hexa")
+            {
+                // affiche pour le fun
+                Console.Write(MessageHexToTabDeByte(Contenu));
+                RepeatToOthers(InfoConnection[THatStObjetct].ConnectionStyle, "<" + Etiquette + ">=<" + Contenu + ">");
+            }
+
+            if (Etiquette == "capteurs")
+            {
+                // affiche pour le fun
+                RepeatToOthers(InfoConnection[THatStObjetct].ConnectionStyle, "<" + Etiquette + ">=<" + Contenu + ">");
+            }
+
+            iDebutEtiquette = DonneesRecues.IndexOf("<");
+            iDebutContenu = DonneesRecues.IndexOf(">=<");
+            if (iDebutContenu >= 0) iFinContenu = DonneesRecues.IndexOf(">", iDebutContenu + 3);
+        }
+        // ---------------------------
+        // il faut toujours reprogrammer le call back
+        if (DontShutThis)
+        {
+            InfoConnection[THatStObjetct].workSocket.BeginReceive
+                (InfoConnection[THatStObjetct].buffer, 0, StateObject.BufferSize, 0,
+                    new AsyncCallback(ReadCallback), InfoConnection[THatStObjetct]);
+        }
+    }
+
+    public String MessageHexToTabDeByte(String MessageARecoder)
+    {
+        int iPosition, iLongeurMessageARecoder;
+        String sMessageHexa = "";
+        char cOctet;
+
+        iPosition = 0;
+        iLongeurMessageARecoder = MessageARecoder.Length;
+
+        while (iPosition < iLongeurMessageARecoder)
+        {
+            cOctet = (char)Convert.ToInt32
+                    (MessageARecoder.Substring(iPosition, 2), 16);
+
+            //tMessageHexa.contenu[iDansContenu] = (byte)Integer.parseInt(sOctet, 16);
+            sMessageHexa += cOctet;
+
+            iPosition += 2;
+        }
+
+        return sMessageHexa;
+    }
 }
 
 public class Launcher
