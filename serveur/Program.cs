@@ -387,7 +387,7 @@ public class AsynchronousSocketListener
             if (Etiquette == "message hexa")
             {
                 // affiche pour le fun
-                Console.Write(MessageHexToTabDeByte(Contenu));
+                Console.Write("\n" + Contenu + " => " + MessageHexToTabDeByte(Contenu));
                 RepeatToOthers(InfoConnection[THatStObjetct].ConnectionStyle, "<" + Etiquette + ">=<" + Contenu + ">");
             }
 
