@@ -299,6 +299,8 @@ public class AsynchronousSocketListener
             DonneesRecues = DonneesRecues.Substring(iFinContenu + 1);
 
             // Selon l'etiquette on fait un truc
+            // <client description>=<side=application_side multicon=Nok>
+            // <client description>=<side=arduino_side multicon=Nok>
 
             if (Etiquette == "client description")
             {

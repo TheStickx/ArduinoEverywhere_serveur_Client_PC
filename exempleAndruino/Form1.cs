@@ -7,11 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
-using System.Text;
 
 namespace exempleAndruino
 {
@@ -22,13 +20,17 @@ namespace exempleAndruino
         public Form1()
         {
             InitializeComponent();
+            
+            IPHostEntry ipHostInfo = Dns.Resolve(Dns.GetHostName());  //"host.contoso.com"
+
             PourReseau = new AsynchronousClient(this)
             {
                 ReceptionMsgCool = new AsynchronousClient.ReceptionMsgCoolHandler(MAJTexteRecu),
                 ReceptionMsgHexa = new AsynchronousClient.ReceptionMsgHexaHandler(MAJMessageHexa),
                 ReceptionCapteur = new AsynchronousClient.ReceptionCapteurHandler(MAJTexteRecu),
-                ReceptionDErreur = new AsynchronousClient.ReceptionDErreurHandler(AfficheLErreur)
-
+                ReceptionDErreur = new AsynchronousClient.ReceptionDErreurHandler(AfficheLErreur),
+                port = 13000,
+                ipAddress = ipHostInfo.AddressList[0] //Dns.GetHostName()
             };
             TopNouvelOrdre.Start();
         } 
@@ -45,7 +47,10 @@ namespace exempleAndruino
 
         public void MAJMessageHexa(String sMessage)
         {
-            TexteRecu.Text += sMessage;
+            int taille = TexteRecu.Text.Length;
+            taille = taille > 200 ? taille - 200 : 0;
+
+            TexteRecu.Text = TexteRecu.Text.Substring(taille) + "\n" + sMessage + " => " + PourReseau.HexToString(sMessage);
         }
 
         public void MAJTexteRecu(String sMessage)
@@ -105,7 +110,12 @@ namespace exempleAndruino
             MessageHexa = PourReseau.StringToHex(MessageHexa);
             PourReseau.SendMsgHexa(MessageHexa);
         }
-        
+
+        private void ButtonDeconnect_Click(object sender, EventArgs e)
+        {
+            PourReseau.Shut();
+        }
+
         private void DrawJoy(object sender, PaintEventArgs e)
         {
             // Create pen.

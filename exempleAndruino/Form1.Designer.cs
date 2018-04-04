@@ -40,6 +40,7 @@ namespace exempleAndruino
             this.panel1 = new System.Windows.Forms.Panel();
             this.TopNouvelOrdre = new System.Windows.Forms.Timer(this.components);
             this.labelError = new System.Windows.Forms.Label();
+            this.ButtonDeconnect = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // ButtonStart
@@ -65,7 +66,7 @@ namespace exempleAndruino
             // TexteRecu
             // 
             this.TexteRecu.AutoSize = true;
-            this.TexteRecu.Location = new System.Drawing.Point(41, 192);
+            this.TexteRecu.Location = new System.Drawing.Point(41, 153);
             this.TexteRecu.Name = "TexteRecu";
             this.TexteRecu.Size = new System.Drawing.Size(108, 13);
             this.TexteRecu.TabIndex = 2;
@@ -105,11 +106,22 @@ namespace exempleAndruino
             this.labelError.TabIndex = 5;
             this.labelError.Text = "label1";
             // 
+            // ButtonDeconnect
+            // 
+            this.ButtonDeconnect.Location = new System.Drawing.Point(148, 55);
+            this.ButtonDeconnect.Name = "ButtonDeconnect";
+            this.ButtonDeconnect.Size = new System.Drawing.Size(80, 23);
+            this.ButtonDeconnect.TabIndex = 6;
+            this.ButtonDeconnect.Text = "Déconnecter";
+            this.ButtonDeconnect.UseVisualStyleBackColor = true;
+            this.ButtonDeconnect.Click += new System.EventHandler(this.ButtonDeconnect_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(579, 469);
+            this.Controls.Add(this.ButtonDeconnect);
             this.Controls.Add(this.labelError);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.TextAEnvoyer);
@@ -132,6 +144,7 @@ namespace exempleAndruino
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Timer TopNouvelOrdre;
         private System.Windows.Forms.Label labelError;
+        private System.Windows.Forms.Button ButtonDeconnect;
     }
 }
 

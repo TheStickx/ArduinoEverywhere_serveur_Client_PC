@@ -15,17 +15,11 @@ namespace exempleAndruino
         public const int BufferSize = 256;
         // Receive buffer.
         public byte[] buffer = new byte[BufferSize];
-        // Received data string.
-        //public StringBuilder sb = new StringBuilder();
     }
 
     public class AsynchronousClient
     {
-        // The port number for the remote device.
-        private const int port = 13000;
-        Socket clientAndruino = new Socket(AddressFamily.InterNetwork,
-                    SocketType.Stream, ProtocolType.Tcp);
-
+        // définition des routines à appeller
         public delegate void ReceptionMsgCoolHandler(String sMessage);
         public ReceptionMsgCoolHandler ReceptionMsgCool;
 
@@ -38,17 +32,16 @@ namespace exempleAndruino
         public delegate void ReceptionDErreurHandler(String sMessage);
         public ReceptionDErreurHandler ReceptionDErreur;
 
-        // ManualResetEvent instances signal completion.
-        private static ManualResetEvent connectDone =
-            new ManualResetEvent(false);
-        private static ManualResetEvent sendDone =
-            new ManualResetEvent(false);
-        private static ManualResetEvent receiveDone =
-            new ManualResetEvent(false);
 
-        // The response from the remote device.
-        private static String response = String.Empty;
+        // pour information
+        public int ByteSend=0, ByteReceive=0;
+        // cette objet sert pour appeller La Form qui a besoin de cette connection
         public Form PourRetourVersGUI;
+        // définition du port et serveur distant
+        public int port;
+        public IPAddress ipAddress;
+        // je rend cet objet accessible (public) 
+        public Socket clientAndruino;
 
         public AsynchronousClient(Form NecessairePourLaSuite)
         {
@@ -61,11 +54,11 @@ namespace exempleAndruino
             try
             {
                 // Establish the remote endpoint for the socket.
-                // The name of the 
-                // remote device is "host.contoso.com".
-                IPHostEntry ipHostInfo = Dns.Resolve(Dns.GetHostName());  //"host.contoso.com"
-                IPAddress ipAddress = ipHostInfo.AddressList[0]; //Dns.GetHostName()
                 IPEndPoint remoteEP = new IPEndPoint(ipAddress, port);
+
+                // recrée l'objet
+                clientAndruino = new Socket(AddressFamily.InterNetwork,
+                    SocketType.Stream, ProtocolType.Tcp);
 
                 // Connect to the remote endpoint.
                 clientAndruino.BeginConnect(remoteEP,
@@ -74,7 +67,7 @@ namespace exempleAndruino
             }
             catch (Exception e)
             {
-                ReceptionDErreur(e.ToString());
+                ThrowError(e.ToString());
             }
         }
 
@@ -88,18 +81,16 @@ namespace exempleAndruino
                 // Complete the connection.
                 client.EndConnect(ar);
                 Receive();
-                Console.WriteLine("Socket connected to {0}",
-                    client.RemoteEndPoint.ToString());
+
+                Send("<client description>=<side=application_side multicon=Nok>");
 
                 PourRetourVersGUI.Invoke(ReceptionMsgCool, new object[]
-                { "Socket connected to {0}" + client.RemoteEndPoint.ToString() });
-
-                // Signal that the connection has been made.
-                connectDone.Set();
+                { "Socket connected to :" + client.RemoteEndPoint.ToString() });
+                
             }
             catch (Exception e)
             {
-                ReceptionDErreur(e.ToString());
+                ThrowError(e.ToString());
             }
         }
 
@@ -108,9 +99,8 @@ namespace exempleAndruino
         public String StringToHex(String sMessageAReformuler)
         {
             int i, iMessageAreformulerTaille, Tempi;
-            String messageReformate=""; // = "<message hexa>=<";// = gcnew  String("<message hexa>=");
+            String messageReformate=""; 
             String ConnerieTemporaire;
-            //= "<message hexa>=";
 
             iMessageAreformulerTaille = sMessageAReformuler.Length;
 
@@ -120,15 +110,13 @@ namespace exempleAndruino
                 Tempi = (int)sMessageAReformuler.Substring(i, 1).ToCharArray()[0];
                 ConnerieTemporaire = String.Format("{0,10:X2}", Tempi).Trim();
                 messageReformate += ConnerieTemporaire;
-                //Integer.toHexString(sMessageAReformuler.contenu[i]);
             }
-            //messageReformate += ">";
             return messageReformate;
         }
 
         public String HexToString(String MessageARecoder)
         {
-            int iPosition, iLongeurMessageARecoder, i;
+            int iPosition, iLongeurMessageARecoder;
             String sMessageHexa = "";
             char cOctet;
 
@@ -139,8 +127,7 @@ namespace exempleAndruino
             {
                 cOctet = (char)Convert.ToInt32
                         (MessageARecoder.Substring(iPosition, 2), 16);
-
-                //tMessageHexa.contenu[iDansContenu] = (byte)Integer.parseInt(sOctet, 16);
+                
                 sMessageHexa += cOctet;
 
                 iPosition += 2;
@@ -238,7 +225,6 @@ namespace exempleAndruino
                 if (Etiquette == "Message cool")
                 {
                     // affiche pour le fun
-                    //Console.WriteLine(Etiquette + "=>" + Contenu);
                     PourRetourVersGUI.Invoke(ReceptionMsgCool, new object[]
                         { Contenu });
 
@@ -246,10 +232,6 @@ namespace exempleAndruino
                 if (Etiquette == "message hexa")
                 {
                     // affiche pour le fun
-                    //Console::WriteLine(Etiquette + "=>" + Contenu);
-                    //Console::WriteLine(Etiquette + ">>" + MessageHexToTabDeByte(Contenu));
-                    //Console.Write(MessageHexToTabDeByte(Contenu));
-
                     PourRetourVersGUI.Invoke(ReceptionMsgHexa, new object[]
                         { Contenu });
 
@@ -273,8 +255,10 @@ namespace exempleAndruino
             try
             {
                 // Create the state object.
-                StateObject state = new StateObject();
-                state.workSocket = clientAndruino;
+                StateObject state = new StateObject
+                {
+                    workSocket = clientAndruino
+                };
 
                 // Begin receiving the data from the remote device.
                 clientAndruino.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
@@ -282,7 +266,7 @@ namespace exempleAndruino
             }
             catch (Exception e)
             {
-                ReceptionDErreur(e.ToString());
+                ThrowError(e.ToString());
             }
         }
 
@@ -297,37 +281,22 @@ namespace exempleAndruino
 
                 // Read data from the remote device.
                 int bytesRead = client.EndReceive(ar);
+                ByteReceive += bytesRead;
 
                 if (bytesRead > 0)
                 {
                     // There might be more data, so store the data received so far.
-                    //state.sb.Append(Encoding.ASCII.GetString(state.buffer, 0, bytesRead));
 
                     ProcessReception(Encoding.ASCII.GetString(state.buffer, 0, bytesRead));
-
-                    //PourRetourVersGUI.Invoke(MessageAssynchrone, new object[]
-                    //    { Encoding.ASCII.GetString(state.buffer, 0, bytesRead) });
-
-
+                    
                     // Get the rest of the data.
                     client.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
                         new AsyncCallback(ReceiveCallback), state);
                 }
-                else
-                {
-                    // All the data has arrived; put it in response.
-                    /*if (state.sb.Length > 1)
-                    {
-                        response = state.sb.ToString();
-                    }
-                    // Signal that all bytes have been received.
-                    receiveDone.Set();*/
-
-                }
             }
             catch (Exception e)
             {
-                ReceptionDErreur(e.ToString());
+                ThrowError(e.ToString());
             }
         }
 
@@ -359,7 +328,7 @@ namespace exempleAndruino
             }
             catch (Exception e)
             {
-                ReceptionDErreur(e.ToString());
+                ThrowError(e.ToString());
             }
         }
 
@@ -371,20 +340,26 @@ namespace exempleAndruino
                 Socket client = (Socket)ar.AsyncState;
 
                 // Complete sending the data to the remote device.
-                int bytesSent = client.EndSend(ar);
-
-
-
-                Console.WriteLine("Sent {0} bytes to server.", bytesSent);
-
-                // Signal that all bytes have been sent.
-                sendDone.Set();
+                ByteSend += client.EndSend(ar);
             }
             catch (Exception e)
             {
-                ReceptionDErreur(e.ToString());
+                ThrowError(e.ToString());
             }
         }
 
+        private void ThrowError( String ErrorMsg )
+        {
+            PourRetourVersGUI.Invoke(ReceptionDErreur, new object[]
+                { ErrorMsg });
+        }
+        
+        public void Shut()
+        {
+            DonneesRecues = "";
+
+            clientAndruino.Shutdown(SocketShutdown.Both);
+            clientAndruino.Close();
+        }
     }
 }
