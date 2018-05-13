@@ -11,6 +11,16 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 
+//----------------------------------------------------------------------------
+// note importante : pour utiliser VLC il faut compiler en X86 
+// voir one note 
+//----------------------------------------------------------------------------
+/*
+
+        public delegate void ReceptionFluxRtspHandler(String sMessage);
+        public ReceptionFluxRtspHandler ReceptionFluxRtsp;
+ */
+
 namespace exempleAndruino
 {
     public partial class Form1 : Form
@@ -27,20 +37,18 @@ namespace exempleAndruino
             {
                 ReceptionMsgCool = new AsynchronousClient.ReceptionMsgCoolHandler(MAJTexteRecu),
                 ReceptionMsgHexa = new AsynchronousClient.ReceptionMsgHexaHandler(MAJMessageHexa),
-                ReceptionCapteur = new AsynchronousClient.ReceptionCapteurHandler(MAJTexteRecu),
+                ReceptionCapteur = new AsynchronousClient.ReceptionCapteurHandler(MAJMessageCapteurs),
                 ReceptionDErreur = new AsynchronousClient.ReceptionDErreurHandler(AfficheLErreur),
+                ReceptionFluxRtsp = new AsynchronousClient.ReceptionFluxRtspHandler(ReceptionFluxRtsp),
                 port = 13000,
                 ipAddress = ipHostInfo.AddressList[0] //Dns.GetHostName()
+
+
             };
             TopNouvelOrdre.Start();
-        } 
-
-        public void AfficheLErreur(String sMessageErreur)
-        {
-            labelError.Text = sMessageErreur;
         }
 
-        public void MAJMessageCapteurs(String sMessage)
+        public void MAJTexteRecu(String sMessage)
         {
             TexteRecu.Text += sMessage;
         }
@@ -53,9 +61,23 @@ namespace exempleAndruino
             TexteRecu.Text = TexteRecu.Text.Substring(taille) + "\n" + sMessage + " => " + PourReseau.HexToString(sMessage);
         }
 
-        public void MAJTexteRecu(String sMessage)
+        public void MAJMessageCapteurs(String sMessage)
         {
             TexteRecu.Text += sMessage;
+        }
+
+        public void AfficheLErreur(String sMessageErreur)
+        {
+            labelError.Text = sMessageErreur;
+        }
+
+        public void ReceptionFluxRtsp(String sFluxRtsp)
+        {
+            // lancement de flux rtsp
+            VLC_View.playlist.add(sFluxRtsp);
+            VLC_View.playlist.play();
+
+            textBoxRtspurl.Text = sFluxRtsp;
         }
 
         private void ButtonStart_Click(object sender, EventArgs e)
@@ -105,8 +127,8 @@ namespace exempleAndruino
         private void TickRelanceOrdre(object sender, EventArgs e)
         {
             String MessageHexa;
-
-            MessageHexa = "M1:" + PourReseau.ByteToHex((byte)(JoyX * 2.55F)) + "> M2:" + PourReseau.ByteToHex((byte)(JoyY * 2.55F)) + "> ";
+            
+            MessageHexa = "M1:" + PourReseau.ByteToHex((byte)(JoyY * 2.55F)) + "> M2:" + PourReseau.ByteToHex((byte)(JoyX * 2.55F)) + "> ";
             MessageHexa = PourReseau.StringToHex(MessageHexa);
             PourReseau.SendMsgHexa(MessageHexa);
         }
@@ -114,6 +136,13 @@ namespace exempleAndruino
         private void ButtonDeconnect_Click(object sender, EventArgs e)
         {
             PourReseau.Shut();
+        }
+
+        private void RtspStart_Click(object sender, EventArgs e)
+        {
+            PourReseau.VideoRequest();
+            //VLC_View.playlist.add(textBoxRtspurl.Text);
+            //VLC_View.playlist.play();
         }
 
         private void DrawJoy(object sender, PaintEventArgs e)

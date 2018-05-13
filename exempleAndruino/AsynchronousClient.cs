@@ -32,6 +32,9 @@ namespace exempleAndruino
         public delegate void ReceptionDErreurHandler(String sMessage);
         public ReceptionDErreurHandler ReceptionDErreur;
 
+        public delegate void ReceptionFluxRtspHandler(String sMessage);
+        public ReceptionFluxRtspHandler ReceptionFluxRtsp;
+
 
         // pour information
         public int ByteSend=0, ByteReceive=0;
@@ -224,14 +227,12 @@ namespace exempleAndruino
                 // Selon l'etiquette on fait un truc
                 if (Etiquette == "Message cool")
                 {
-                    // affiche pour le fun
                     PourRetourVersGUI.Invoke(ReceptionMsgCool, new object[]
                         { Contenu });
 
                 }
                 if (Etiquette == "message hexa")
                 {
-                    // affiche pour le fun
                     PourRetourVersGUI.Invoke(ReceptionMsgHexa, new object[]
                         { Contenu });
 
@@ -239,9 +240,13 @@ namespace exempleAndruino
 
                 if (Etiquette == "capteurs")
                 {
-                    // affiche pour le fun
                     PourRetourVersGUI.Invoke(ReceptionCapteur, new object[]
                         { Contenu });
+                }
+
+                if (Etiquette == "video")
+                {
+                    ProcessVideoRequest(Contenu);
                 }
 
                 iDebutEtiquette = DonneesRecues.IndexOf("<");
@@ -313,7 +318,7 @@ namespace exempleAndruino
         public void SendCapteur(String data)
         {
             Send( "<capteurs>=<" + data + ">" );
-        }
+        } 
 
         public void Send(String data)
         {
@@ -347,6 +352,27 @@ namespace exempleAndruino
                 ThrowError(e.ToString());
             }
         }
+
+        //-----------------------------------------------------------
+        // Fonctions pour la video
+        public void VideoRequest ()
+        {
+            Send("<video>=<request>");
+        }
+        public void VideoStop()
+        {
+            Send("<video>=<stop>");
+        }
+        public void ProcessVideoRequest (string Requete )
+        {
+            if ( Requete.Substring(1,6) == "flush=" )
+            {
+                // on a recu l'adresse d'un flux
+                PourRetourVersGUI.Invoke(ReceptionFluxRtsp, new object[]
+                    { Requete.Substring(7) });
+            }
+        }
+        //-----------------------------------------------------------
 
         private void ThrowError( String ErrorMsg )
         {

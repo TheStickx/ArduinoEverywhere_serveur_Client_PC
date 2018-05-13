@@ -399,6 +399,13 @@ public class AsynchronousSocketListener
                 RepeatToOthers(InfoConnection[THatStObjetct].ConnectionStyle, "<" + Etiquette + ">=<" + Contenu + ">");
             }
 
+            if (Etiquette == "video")
+            {
+                // affiche pour le fun
+                Console.WriteLine(Etiquette + "=>" + Contenu);
+                RepeatToOthers(InfoConnection[THatStObjetct].ConnectionStyle, "<" + Etiquette + ">=<" + Contenu + ">");
+            }
+
             iDebutEtiquette = DonneesRecues.IndexOf("<");
             iDebutContenu = DonneesRecues.IndexOf(">=<");
             if (iDebutContenu >= 0) iFinContenu = DonneesRecues.IndexOf(">", iDebutContenu + 3);
