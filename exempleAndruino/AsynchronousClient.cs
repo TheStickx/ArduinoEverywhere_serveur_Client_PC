@@ -365,11 +365,11 @@ namespace exempleAndruino
         }
         public void ProcessVideoRequest (string Requete )
         {
-            if ( Requete.Substring(1,6) == "flush=" )
+            if ( Requete.Substring(0,6) == "flush=" )
             {
                 // on a recu l'adresse d'un flux
                 PourRetourVersGUI.Invoke(ReceptionFluxRtsp, new object[]
-                    { Requete.Substring(7) });
+                    { Requete.Substring(6) });
             }
         }
         //-----------------------------------------------------------

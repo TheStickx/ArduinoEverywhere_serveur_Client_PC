@@ -382,7 +382,7 @@ public class AsynchronousSocketListener
             if (Etiquette == "Message cool")
             {
                 // affiche pour le fun
-                Console.WriteLine(Etiquette + "=>" + Contenu);
+                Console.Write("\n" + Etiquette + "=>" + Contenu);
                 RepeatToOthers( InfoConnection[THatStObjetct].ConnectionStyle , "<" + Etiquette + ">=<" + Contenu + ">");
             }
 
@@ -402,7 +402,7 @@ public class AsynchronousSocketListener
             if (Etiquette == "video")
             {
                 // affiche pour le fun
-                Console.WriteLine(Etiquette + "=>" + Contenu);
+                Console.Write("\n" + Etiquette + "=>" + Contenu);
                 RepeatToOthers(InfoConnection[THatStObjetct].ConnectionStyle, "<" + Etiquette + ">=<" + Contenu + ">");
             }
 

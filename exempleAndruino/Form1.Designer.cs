@@ -157,6 +157,7 @@ namespace exempleAndruino
             this.RtspStop.TabIndex = 10;
             this.RtspStop.Text = "video stop";
             this.RtspStop.UseVisualStyleBackColor = true;
+            this.RtspStop.Click += new System.EventHandler(this.RtspStop_Click);
             // 
             // Form1
             // 

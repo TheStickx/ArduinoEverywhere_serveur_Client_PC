@@ -74,6 +74,7 @@ namespace exempleAndruino
         public void ReceptionFluxRtsp(String sFluxRtsp)
         {
             // lancement de flux rtsp
+            VLC_View.playlist.items.clear();
             VLC_View.playlist.add(sFluxRtsp);
             VLC_View.playlist.play();
 
@@ -143,6 +144,11 @@ namespace exempleAndruino
             PourReseau.VideoRequest();
             //VLC_View.playlist.add(textBoxRtspurl.Text);
             //VLC_View.playlist.play();
+        }
+
+        private void RtspStop_Click(object sender, EventArgs e)
+        {
+            PourReseau.VideoStop();
         }
 
         private void DrawJoy(object sender, PaintEventArgs e)
