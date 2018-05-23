@@ -46,6 +46,7 @@ namespace exempleAndruino
             this.RtspStart = new System.Windows.Forms.Button();
             this.textBoxRtspurl = new System.Windows.Forms.TextBox();
             this.RtspStop = new System.Windows.Forms.Button();
+            this.NomDuFlux = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.VLC_View)).BeginInit();
             this.SuspendLayout();
             // 
@@ -159,11 +160,20 @@ namespace exempleAndruino
             this.RtspStop.UseVisualStyleBackColor = true;
             this.RtspStop.Click += new System.EventHandler(this.RtspStop_Click);
             // 
+            // NomDuFlux
+            // 
+            this.NomDuFlux.Location = new System.Drawing.Point(319, 34);
+            this.NomDuFlux.Name = "NomDuFlux";
+            this.NomDuFlux.ReadOnly = true;
+            this.NomDuFlux.Size = new System.Drawing.Size(415, 20);
+            this.NomDuFlux.TabIndex = 12;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(830, 469);
+            this.Controls.Add(this.NomDuFlux);
             this.Controls.Add(this.RtspStop);
             this.Controls.Add(this.textBoxRtspurl);
             this.Controls.Add(this.RtspStart);
@@ -177,6 +187,7 @@ namespace exempleAndruino
             this.Controls.Add(this.ButtonStart);
             this.Name = "Form1";
             this.Text = "Form1";
+            this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.VLC_View)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -197,6 +208,7 @@ namespace exempleAndruino
         private System.Windows.Forms.Button RtspStart;
         private System.Windows.Forms.TextBox textBoxRtspurl;
         private System.Windows.Forms.Button RtspStop;
+        private System.Windows.Forms.TextBox NomDuFlux;
     }
 }
 

@@ -74,11 +74,11 @@ namespace exempleAndruino
         public void ReceptionFluxRtsp(String sFluxRtsp)
         {
             // lancement de flux rtsp
+            NomDuFlux.Text = sFluxRtsp;
+            VLC_View.playlist.stop();
             VLC_View.playlist.items.clear();
-            VLC_View.playlist.add(sFluxRtsp);
+            VLC_View.playlist.add(textBoxRtspurl.Text,"mycam", ":network-caching=400");
             VLC_View.playlist.play();
-
-            textBoxRtspurl.Text = sFluxRtsp;
         }
 
         private void ButtonStart_Click(object sender, EventArgs e)
@@ -149,6 +149,11 @@ namespace exempleAndruino
         private void RtspStop_Click(object sender, EventArgs e)
         {
             PourReseau.VideoStop();
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
         }
 
         private void DrawJoy(object sender, PaintEventArgs e)
