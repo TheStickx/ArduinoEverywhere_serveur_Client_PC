@@ -305,6 +305,7 @@ namespace exempleAndruino
             this.labelError.Location = new System.Drawing.Point(3, 3);
             this.labelError.Multiline = true;
             this.labelError.Name = "labelError";
+            this.labelError.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.labelError.Size = new System.Drawing.Size(819, 76);
             this.labelError.TabIndex = 0;
             // 
