@@ -266,9 +266,11 @@ public class AsynchronousSocketListener
 
     private static void Shut(StateObject State)
     {
-
-        InfoConnection[State.WhichStObjectAmI].workSocket.Shutdown(SocketShutdown.Both);
-        InfoConnection[State.WhichStObjectAmI].workSocket.Close();
+        if (InfoConnection[State.WhichStObjectAmI].workSocket.Connected )
+        {
+            InfoConnection[State.WhichStObjectAmI].workSocket.Shutdown(SocketShutdown.Both);
+            InfoConnection[State.WhichStObjectAmI].workSocket.Close();
+        }
         InfoConnection[State.WhichStObjectAmI].ConnectionStyle = StateObject.EnumConnectionStyle.NA;
     }
 
@@ -354,7 +356,8 @@ public class AsynchronousSocketListener
                                 {
                                     if (InfoConnection[i].ConnectionStyle == Side)
                                     {
-                                        Shut(InfoConnection[i]);
+                                        // Shut(InfoConnection[i]);  ben non c'est la connection en cours qu'il faut fermer
+                                        Shut(InfoConnection[THatStObjetct]); 
                                         DontShutThis = false;
                                         Console.WriteLine("La connexion N°{0} est refusé car Multicon=NOK\n", THatStObjetct);
                                         MultiOk = false;

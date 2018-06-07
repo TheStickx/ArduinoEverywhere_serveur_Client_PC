@@ -384,8 +384,18 @@ namespace exempleAndruino
         {
             DonneesRecues = "";
 
-            clientAndruino.Shutdown(SocketShutdown.Both);
-            clientAndruino.Close();
+            try
+            {
+                if (clientAndruino.Connected)
+                {
+                    clientAndruino.Shutdown(SocketShutdown.Both);
+                    clientAndruino.Close();
+                }
+            }
+            catch (Exception e)
+            {
+                ThrowError(e.ToString());
+            }
         }
     }
 }
