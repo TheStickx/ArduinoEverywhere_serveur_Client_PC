@@ -4,6 +4,9 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 
+// it's required for reading/writing into the registry:
+using Microsoft.Win32;
+
 // State object for reading client data asynchronously
 public class StateObject
 {
@@ -35,6 +38,10 @@ public class AsynchronousSocketListener
     private static StateObject[] InfoConnection = new StateObject[NmaxStObjects];
     Socket listener;
 
+    String PasswordOfClients;
+    int PortOfServer;
+    Boolean DebugMode;
+
     public AsynchronousSocketListener()
     {
     }
@@ -52,13 +59,14 @@ public class AsynchronousSocketListener
                 WhichStObjectAmI = i
             };
         }
+        LoadConf();
 
         // Establish the local endpoint for the socket.
         // The DNS name of the computer
         // running the listener is "host.contoso.com".
         IPHostEntry ipHostInfo = Dns.Resolve(Dns.GetHostName());
         IPAddress ipAddress = ipHostInfo.AddressList[0];
-        IPEndPoint localEndPoint = new IPEndPoint(ipAddress, 13000);
+        IPEndPoint localEndPoint = new IPEndPoint(ipAddress, PortOfServer);
         String venantDeLaConsole;
 
         // Create a TCP/IP socket.
@@ -76,7 +84,7 @@ public class AsynchronousSocketListener
                 // Set the event to nonsignaled state.
 
                 // Start an asynchronous socket to listen for connections.
-                Console.WriteLine("Waiting for first connection...");
+                Console.WriteLine("Waiting for first connection...on port " + PortOfServer + " (press hey for menu)");
 
                 ShouldIAcceptNewConnexion(); // nouvelle méthode pour begin accept plus soupple
 
@@ -86,11 +94,64 @@ public class AsynchronousSocketListener
                     /* if (InfoConnection[0].workSocket.Connected && Console.KeyAvailable)
                     {
                         if (Console.KeyAvailable)
-                        {*/
+                        {
                             venantDeLaConsole = Console.ReadLine();
                             RepeatToOthers(StateObject.EnumConnectionStyle.Undefine, venantDeLaConsole);
-                        /*}
+                        }
                     }*/
+                    venantDeLaConsole = Console.ReadLine();
+                    
+                    switch (venantDeLaConsole)
+                    {
+                        case "port":
+                            Console.WriteLine("Entrez le port:");
+                            venantDeLaConsole = Console.ReadLine();
+                            if (!Int32.TryParse (venantDeLaConsole, out PortOfServer ) )
+                            {
+                                Console.WriteLine("valeure incorrecte port = 13000");
+                                PortOfServer = 13000;
+                            }
+                            if (PortOfServer>65535 || PortOfServer <0)
+                            {
+                                Console.WriteLine("valeure incorrecte port = 13000");
+                                PortOfServer = 13000;
+                            }
+                            Console.WriteLine("Le changement de port sera effectif au prochain lancement");
+                            break;
+
+                        case "password":
+                            Console.WriteLine("Entrez le Mot de passe:");
+                            break;
+
+                        case "debug":
+                            Console.WriteLine("debug (y/n):");
+                            venantDeLaConsole = Console.ReadLine();
+
+                            if (venantDeLaConsole == "y")
+                            {
+                                DebugMode = true;
+                                Console.WriteLine("\ndebug mode activé\n");
+                            }
+                            else
+                            {
+                                DebugMode = false;
+                                Console.WriteLine("\ndebug mode désactivé\n");
+                            }
+                            break;
+
+                        case "exit":
+                            Console.WriteLine("\nWriting conf to register (press a key)");
+                            Console.Read();
+                            SaveToReg();
+                            return;
+
+                        default:
+                            Console.WriteLine("\ntappez le nom du paramètre parmis cette liste pour pouvoir le changer:\nport\npassword\ndebug\nexit\n\n");
+                            break;
+
+                    }
+
+                    
                 }
             }
 
@@ -385,14 +446,14 @@ public class AsynchronousSocketListener
             if (Etiquette == "Message cool")
             {
                 // affiche pour le fun
-                Console.Write("\n" + Etiquette + "=>" + Contenu);
+                if (DebugMode) Console.Write("\n" + Etiquette + "=>" + Contenu);
                 RepeatToOthers( InfoConnection[THatStObjetct].ConnectionStyle , "<" + Etiquette + ">=<" + Contenu + ">");
             }
 
             if (Etiquette == "message hexa")
             {
                 // affiche pour le fun
-                Console.Write("\n" + Contenu + " => " + MessageHexToTabDeByte(Contenu));
+                if (DebugMode) Console.Write("\n" + Contenu + " => " + MessageHexToTabDeByte(Contenu));
                 RepeatToOthers(InfoConnection[THatStObjetct].ConnectionStyle, "<" + Etiquette + ">=<" + Contenu + ">");
             }
 
@@ -405,7 +466,7 @@ public class AsynchronousSocketListener
             if (Etiquette == "video")
             {
                 // affiche pour le fun
-                Console.Write("\n" + Etiquette + "=>" + Contenu);
+                if (DebugMode) Console.Write("\n" + Etiquette + "=>" + Contenu);
                 RepeatToOthers(InfoConnection[THatStObjetct].ConnectionStyle, "<" + Etiquette + ">=<" + Contenu + ">");
             }
 
@@ -444,6 +505,72 @@ public class AsynchronousSocketListener
         }
 
         return sMessageHexa;
+    }
+
+    private RegistryKey baseRegistryKey = Registry.CurrentUser;  //LocalMachine
+    private string subKey = "Software\\Arduino Everywhere Server";
+
+    private void LoadConf()
+    {
+        if (!Int32.TryParse(LoadReg("Port"), out PortOfServer)) PortOfServer = 13000;
+
+        PasswordOfClients = LoadReg("password");
+
+        if (LoadReg("debug") == "yes") DebugMode = true;
+        else DebugMode = false;
+    }
+
+    private String LoadReg(String Key)
+    {
+        // Opening the registry key
+        RegistryKey rk = baseRegistryKey;
+        // Open a subKey as read-only
+        RegistryKey sk1 = rk.OpenSubKey(subKey);
+        // If the RegistrySubKey doesn't exist -> (null)
+
+        if (sk1 != null)
+        {
+            try
+            {
+                // If the RegistryKey exists I get its value
+                // or null is returned.    ToUpper
+                return (string)sk1.GetValue(Key);
+            }
+            catch (Exception e)
+            {
+                // AAAAAAAAAAARGH, an error!
+                Console.WriteLine(e.ToString() + "\nReading registry " + Key);
+            }
+        }
+        return "";
+    }
+
+    private void SaveToReg()
+    {
+        SaveVal("Port", String.Format("{0}", PortOfServer));
+        SaveVal("password", PasswordOfClients);
+        if (DebugMode) SaveVal("debug", "yes");
+        else SaveVal("debug", "no");
+    }
+
+    private void SaveVal(String Key, String Value)
+    {
+        try
+        {
+            // Setting   Software
+            RegistryKey rk = baseRegistryKey;
+            // I have to use CreateSubKey 
+            // (create or open it if already exits), 
+            // 'cause OpenSubKey open a subKey as read-only
+            RegistryKey sk1 = rk.CreateSubKey(subKey);
+            // Save the value
+            sk1.SetValue(Key, Value);
+        }
+        catch (Exception e)
+        {
+            // AAAAAAAAAAARGH, an error!
+            Console.WriteLine(e.ToString() + "\nWriting registry " + Key);
+        }
     }
 }
 
