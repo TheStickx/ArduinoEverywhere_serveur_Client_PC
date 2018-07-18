@@ -77,7 +77,7 @@ namespace exempleAndruino
             NomDuFlux.Text = sFluxRtsp;
             VLC_View.playlist.stop();
             VLC_View.playlist.items.clear();
-            VLC_View.playlist.add(textBoxRtspurl.Text,"mycam", ":network-caching=400");
+            VLC_View.playlist.add(textBoxRtspurl.Text,"mycam", ":network-caching=600");
             VLC_View.playlist.play();
         }
 
