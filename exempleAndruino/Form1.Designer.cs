@@ -39,6 +39,8 @@ namespace exempleAndruino
             this.RtspStop = new System.Windows.Forms.Button();
             this.Options = new System.Windows.Forms.TabControl();
             this.Serveur = new System.Windows.Forms.TabPage();
+            this.labelPassw = new System.Windows.Forms.Label();
+            this.PasswTextBox = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.textBoxPort = new System.Windows.Forms.TextBox();
@@ -46,6 +48,9 @@ namespace exempleAndruino
             this.ButtonStart = new System.Windows.Forms.Button();
             this.AdressBox = new System.Windows.Forms.TextBox();
             this.Video = new System.Windows.Forms.TabPage();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.textBoxVideoCache = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.NomDuFlux = new System.Windows.Forms.TextBox();
@@ -59,19 +64,20 @@ namespace exempleAndruino
             this.labelError = new System.Windows.Forms.TextBox();
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.GraphGauge = new System.Windows.Forms.PictureBox();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
             this.panel4 = new System.Windows.Forms.Panel();
             this.VLC_View = new AxAXVLC.AxVLCPlugin2();
-            this.PasswTextBox = new System.Windows.Forms.TextBox();
-            this.labelPassw = new System.Windows.Forms.Label();
             this.Options.SuspendLayout();
             this.Serveur.SuspendLayout();
             this.Video.SuspendLayout();
+            this.groupBox1.SuspendLayout();
             this.MsgTest.SuspendLayout();
             this.panel3.SuspendLayout();
             this.Erreures.SuspendLayout();
             this.panel2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.GraphGauge)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
             this.panel4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.VLC_View)).BeginInit();
@@ -133,6 +139,22 @@ namespace exempleAndruino
             this.Serveur.Text = "serveur";
             this.Serveur.UseVisualStyleBackColor = true;
             // 
+            // labelPassw
+            // 
+            this.labelPassw.AutoSize = true;
+            this.labelPassw.Location = new System.Drawing.Point(126, 45);
+            this.labelPassw.Name = "labelPassw";
+            this.labelPassw.Size = new System.Drawing.Size(71, 13);
+            this.labelPassw.TabIndex = 21;
+            this.labelPassw.Text = "Mot de passe";
+            // 
+            // PasswTextBox
+            // 
+            this.PasswTextBox.Location = new System.Drawing.Point(203, 42);
+            this.PasswTextBox.Name = "PasswTextBox";
+            this.PasswTextBox.Size = new System.Drawing.Size(100, 20);
+            this.PasswTextBox.TabIndex = 20;
+            // 
             // label2
             // 
             this.label2.AutoSize = true;
@@ -191,6 +213,7 @@ namespace exempleAndruino
             // 
             // Video
             // 
+            this.Video.Controls.Add(this.groupBox1);
             this.Video.Controls.Add(this.label4);
             this.Video.Controls.Add(this.label3);
             this.Video.Controls.Add(this.NomDuFlux);
@@ -204,6 +227,34 @@ namespace exempleAndruino
             this.Video.TabIndex = 1;
             this.Video.Text = "Video";
             this.Video.UseVisualStyleBackColor = true;
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.textBoxVideoCache);
+            this.groupBox1.Controls.Add(this.label5);
+            this.groupBox1.Location = new System.Drawing.Point(628, 10);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(189, 66);
+            this.groupBox1.TabIndex = 17;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "option";
+            // 
+            // textBoxVideoCache
+            // 
+            this.textBoxVideoCache.Location = new System.Drawing.Point(70, 13);
+            this.textBoxVideoCache.Name = "textBoxVideoCache";
+            this.textBoxVideoCache.Size = new System.Drawing.Size(100, 20);
+            this.textBoxVideoCache.TabIndex = 1;
+            this.textBoxVideoCache.Text = "600";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(7, 13);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(56, 13);
+            this.label5.TabIndex = 0;
+            this.label5.Text = "cache ms:";
             // 
             // label4
             // 
@@ -323,12 +374,21 @@ namespace exempleAndruino
             // 
             // panel2
             // 
+            this.panel2.Controls.Add(this.GraphGauge);
             this.panel2.Controls.Add(this.panel1);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Left;
             this.panel2.Location = new System.Drawing.Point(0, 108);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(133, 602);
             this.panel2.TabIndex = 17;
+            // 
+            // GraphGauge
+            // 
+            this.GraphGauge.Location = new System.Drawing.Point(15, 243);
+            this.GraphGauge.Name = "GraphGauge";
+            this.GraphGauge.Size = new System.Drawing.Size(100, 100);
+            this.GraphGauge.TabIndex = 17;
+            this.GraphGauge.TabStop = false;
             // 
             // errorProvider1
             // 
@@ -351,23 +411,7 @@ namespace exempleAndruino
             this.VLC_View.Name = "VLC_View";
             this.VLC_View.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("VLC_View.OcxState")));
             this.VLC_View.Size = new System.Drawing.Size(700, 602);
-            this.VLC_View.TabIndex = 8;
-            // 
-            // PasswTextBox
-            // 
-            this.PasswTextBox.Location = new System.Drawing.Point(203, 42);
-            this.PasswTextBox.Name = "PasswTextBox";
-            this.PasswTextBox.Size = new System.Drawing.Size(100, 20);
-            this.PasswTextBox.TabIndex = 20;
-            // 
-            // labelPassw
-            // 
-            this.labelPassw.AutoSize = true;
-            this.labelPassw.Location = new System.Drawing.Point(126, 45);
-            this.labelPassw.Name = "labelPassw";
-            this.labelPassw.Size = new System.Drawing.Size(71, 13);
-            this.labelPassw.TabIndex = 21;
-            this.labelPassw.Text = "Mot de passe";
+            this.VLC_View.TabIndex = 0;
             // 
             // Form1
             // 
@@ -386,6 +430,8 @@ namespace exempleAndruino
             this.Serveur.PerformLayout();
             this.Video.ResumeLayout(false);
             this.Video.PerformLayout();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.MsgTest.ResumeLayout(false);
             this.MsgTest.PerformLayout();
             this.panel3.ResumeLayout(false);
@@ -393,6 +439,7 @@ namespace exempleAndruino
             this.Erreures.ResumeLayout(false);
             this.Erreures.PerformLayout();
             this.panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.GraphGauge)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).EndInit();
             this.panel4.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.VLC_View)).EndInit();
@@ -429,9 +476,13 @@ namespace exempleAndruino
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private System.Windows.Forms.ErrorProvider errorProvider1;
         private System.Windows.Forms.Panel panel4;
-        private AxAXVLC.AxVLCPlugin2 VLC_View;
         private System.Windows.Forms.Label labelPassw;
         private System.Windows.Forms.TextBox PasswTextBox;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.TextBox textBoxVideoCache;
+        private System.Windows.Forms.PictureBox GraphGauge;
+        private AxAXVLC.AxVLCPlugin2 VLC_View;
     }
 }
 
