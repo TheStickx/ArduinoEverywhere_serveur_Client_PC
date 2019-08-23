@@ -30,6 +30,7 @@ public class StateObject
     public EnumConnectionStyle ConnectionStyle;
     public int WhichStObjectAmI;
     public bool MultiConnexion;
+    public bool BTstatus;
 }
 
 public class AsynchronousSocketListener
@@ -158,7 +159,7 @@ public class AsynchronousSocketListener
         }
         catch (Exception e)
         {
-            Console.WriteLine(e.ToString());
+            Console.WriteLine( DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss ")   + e.ToString());
         }
 
         Console.WriteLine("\nPress ENTER to continue...");
@@ -233,6 +234,39 @@ public class AsynchronousSocketListener
 
     }
 
+    private static int CombienDeBT()
+    {
+        int NbBT=0;
+
+        for (int i = 0; i < NmaxStObjects; i++)
+                {
+            if (InfoConnection[i].ConnectionStyle == StateObject.EnumConnectionStyle.Arduino)
+            {
+                if (InfoConnection[i].BTstatus == true)
+                {
+                    NbBT++;
+                }
+            }
+        }
+
+        return NbBT;
+    }
+
+    private static int CombienDApplis()
+    {
+        int NbApp = 0;
+
+        for (int i = 0; i < NmaxStObjects; i++)
+        {
+            if (InfoConnection[i].ConnectionStyle == StateObject.EnumConnectionStyle.Application)
+            {
+                NbApp++;
+            }
+        }
+
+        return NbApp;
+    }
+
     public void AcceptCallback(IAsyncResult ar)
     {
         // Get the socket that handles the client request.
@@ -289,7 +323,7 @@ public class AsynchronousSocketListener
         }
         catch (Exception e)
         {
-            Console.WriteLine(e.ToString());
+            Console.WriteLine(DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss ")   + e.ToString());
 
             Shut(state);
 
@@ -321,7 +355,7 @@ public class AsynchronousSocketListener
         }
         catch (Exception e)
         {
-            Console.WriteLine(e.ToString());
+            Console.WriteLine(DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss ")   + e.ToString());
         }
     }
 
@@ -439,7 +473,7 @@ public class AsynchronousSocketListener
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e.ToString());
+                    Console.WriteLine(DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss ")   + e.ToString());
                 }
             }
 
@@ -450,10 +484,48 @@ public class AsynchronousSocketListener
                 RepeatToOthers( InfoConnection[THatStObjetct].ConnectionStyle , "<" + Etiquette + ">=<" + Contenu + ">");
             }
 
+            if (Etiquette == "BTstat")
+            {
+                // récupère le statut du BlueTooth
+                if (DebugMode) Console.Write("\n" + Etiquette + "=>" + Contenu);
+                if (InfoConnection[THatStObjetct].ConnectionStyle == StateObject.EnumConnectionStyle.Arduino )
+                {
+                    if (Contenu == "OK")
+                    {
+                        InfoConnection[THatStObjetct].BTstatus = true;
+                    }
+                    if (Contenu == "NOK")
+                    {
+                        InfoConnection[THatStObjetct].BTstatus = false;
+                    }
+                    // réponds en donnant le nombre d'applis
+                    Send(InfoConnection[THatStObjetct].workSocket, "<NBAppli>=<" + CombienDApplis() + ">");
+                }
+                else
+                {
+                    Console.Write("\nErreur " + Etiquette + "=>" + Contenu + "Sollicitation incohérente: Seul ARDUINO EVERYWERE a un BlueToot");
+                }
+            }
+
+            if (Etiquette == "PingApp")
+            {
+                // récupère le statut du BlueTooth
+                if (DebugMode) Console.Write("\n" + Etiquette + "=>" + Contenu);
+                if (InfoConnection[THatStObjetct].ConnectionStyle == StateObject.EnumConnectionStyle.Application)
+                {
+                    // réponds en donnant le nombre de BlueTooth
+                    Send(InfoConnection[THatStObjetct].workSocket, "<NbrBT>=<" + CombienDeBT() + ">");
+                }
+                else
+                {
+                    Console.Write("\nErreur " + Etiquette + "=>" + Contenu + "Sollicitation incohérente: Ping app depuis ARDUINO EVERYWERE");
+                }
+            }
+
             if (Etiquette == "message hexa")
             {
                 // affiche pour le fun
-                if (DebugMode) Console.Write("\n" + Contenu + " => " + MessageHexToTabDeByte(Contenu));
+                if (DebugMode) Console.Write("\n" + DateTime.Now.ToString("HH:mm:ss ") + Contenu + " => " + MessageHexToTabDeByte(Contenu));
                 RepeatToOthers(InfoConnection[THatStObjetct].ConnectionStyle, "<" + Etiquette + ">=<" + Contenu + ">");
             }
 
@@ -539,7 +611,7 @@ public class AsynchronousSocketListener
             catch (Exception e)
             {
                 // AAAAAAAAAAARGH, an error!
-                Console.WriteLine(e.ToString() + "\nReading registry " + Key);
+                Console.WriteLine(DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss ")   + e.ToString() + "\nReading registry " + Key);
             }
         }
         return "";
@@ -569,7 +641,7 @@ public class AsynchronousSocketListener
         catch (Exception e)
         {
             // AAAAAAAAAAARGH, an error!
-            Console.WriteLine(e.ToString() + "\nWriting registry " + Key);
+            Console.WriteLine(DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss ")   + e.ToString() + "\nWriting registry " + Key);
         }
     }
 }

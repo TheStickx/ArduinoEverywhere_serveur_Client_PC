@@ -6,32 +6,21 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-
 using System.Net;
-using System.Net.Sockets;
-using System.Threading;
 
 // it's required for reading/writing into the registry:
 using Microsoft.Win32;
+using System.Diagnostics;
 
-//----------------------------------------------------------------------------
-// note importante : pour utiliser VLC il faut compiler en X86 
-// voir one note 
-//----------------------------------------------------------------------------
-/*
-
-        public delegate void ReceptionFluxRtspHandler(String sMessage);
-        public ReceptionFluxRtspHandler ReceptionFluxRtsp;
- */
-
-
-namespace exempleAndruino
+namespace DroneCMD
 {
-    public partial class Form1 : Form
+    public partial class DroneUI : Form
     {
         public AsynchronousClient PourReseau;
 
-        public Form1()
+        Process processVLC;
+
+        public DroneUI()
         {
             InitializeComponent();
 
@@ -53,6 +42,8 @@ namespace exempleAndruino
             TopNouvelOrdre.Start();
             // pour forcer l'envoy des valeur du joyStick
             PreviousMessageHexa = "";
+
+            processVLC  = new Process();
         }
 
         //------------------------------------------------------------------------------------------------------------
@@ -106,11 +97,6 @@ namespace exempleAndruino
                 // Selon l'etiquette on fait un truc
                 if (Etiquette == "1")
                 {
-                    /* private string CompleteMessage;
-        private const int GaugeHistWidth= 100;
-        private const int GaugeHistHeight = 100;
-        private int[] historiqueGauge = new int[GaugeHistWidth];
-        private int GaugeElementActuel = 0; */
                     TexteRecu.Text = TexteRecu.Text.Substring(taille) + " " + Contenu;
 
                     Bitmap bmp = new Bitmap(GaugeHistWidth, GaugeHistHeight); // déclare une image bitmap
@@ -127,25 +113,25 @@ namespace exempleAndruino
 
                     for (iGaugeBrowse = 0; iGaugeBrowse < GaugeHistWidth - 2; iGaugeBrowse++)
                     {
-                        if (iGaugeBrowse > ( GaugeHistWidth - GaugeCurrentValue - 1 ))
+                        if (iGaugeBrowse > (GaugeHistWidth - GaugeCurrentValue - 1))
                         {
                             g.DrawLine(_oscilloPen
-                                      , iGaugeBrowse, GaugeHistHeight - HistoriqueGauge[(GaugeHistWidth - 1) * 2 - iGaugeBrowse - GaugeCurrentValue ] - 2 
-                                      , iGaugeBrowse + 1, GaugeHistHeight - HistoriqueGauge[(GaugeHistWidth - 1) * 2 - iGaugeBrowse - GaugeCurrentValue - 1 ] - 2);
+                                      , iGaugeBrowse, GaugeHistHeight - HistoriqueGauge[(GaugeHistWidth - 1) * 2 - iGaugeBrowse - GaugeCurrentValue] - 2
+                                      , iGaugeBrowse + 1, GaugeHistHeight - HistoriqueGauge[(GaugeHistWidth - 1) * 2 - iGaugeBrowse - GaugeCurrentValue - 1] - 2);
                         }
                         else
                         {
-                            if (iGaugeBrowse == ( GaugeHistWidth - GaugeCurrentValue - 1 ))
+                            if (iGaugeBrowse == (GaugeHistWidth - GaugeCurrentValue - 1))
                             {
-                               g.DrawLine(_oscilloPen
-                                          , iGaugeBrowse, GaugeHistHeight - HistoriqueGauge[GaugeHistWidth - 1 - iGaugeBrowse - GaugeCurrentValue] - 2
-                                          , iGaugeBrowse + 1, GaugeHistHeight - HistoriqueGauge[(GaugeHistWidth - 1) * 2 - iGaugeBrowse - GaugeCurrentValue] - 2 );
+                                g.DrawLine(_oscilloPen
+                                           , iGaugeBrowse, GaugeHistHeight - HistoriqueGauge[GaugeHistWidth - 1 - iGaugeBrowse - GaugeCurrentValue] - 2
+                                           , iGaugeBrowse + 1, GaugeHistHeight - HistoriqueGauge[(GaugeHistWidth - 1) * 2 - iGaugeBrowse - GaugeCurrentValue] - 2);
                             }
                             else
                             {
                                 g.DrawLine(_oscilloPen
-                                          , iGaugeBrowse, GaugeHistHeight - HistoriqueGauge  [ GaugeHistWidth - 1 - iGaugeBrowse - GaugeCurrentValue] - 2
-                                          , iGaugeBrowse + 1, GaugeHistHeight - HistoriqueGauge  [GaugeHistWidth - 2 - iGaugeBrowse - GaugeCurrentValue] - 2 );
+                                          , iGaugeBrowse, GaugeHistHeight - HistoriqueGauge[GaugeHistWidth - 1 - iGaugeBrowse - GaugeCurrentValue] - 2
+                                          , iGaugeBrowse + 1, GaugeHistHeight - HistoriqueGauge[GaugeHistWidth - 2 - iGaugeBrowse - GaugeCurrentValue] - 2);
                             }
                         }
                     }
@@ -182,13 +168,24 @@ namespace exempleAndruino
                 CacheTime = 600;                                          // ici on remet une valeur correcte dans le textbox
             }
             NomDuFlux.Text = sFluxRtsp;
-            VLC_View.playlist.stop();
+            /* VLC_View.playlist.stop();
             VLC_View.playlist.items.clear();
 
-            // simplification rtsp    System.Threading.Thread.Sleep(1000);
+            System.Threading.Thread.Sleep(1000);
 
             VLC_View.playlist.add(textBoxRtspurl.Text, "mycam", ":network-caching=" + CacheTime);
-            VLC_View.playlist.play();
+            VLC_View.playlist.play();        --network-caching=500  */
+            try
+            {
+                processVLC.Kill();
+            }
+            catch (Exception e)
+            {  // bof m'en fout 
+            }
+            System.Threading.Thread.Sleep(500);
+            processVLC = Process.Start("vlc.exe", textBoxRtspurl.Text + " --network-caching=" + CacheTime);
+            // processVLC = Process.Start("vlc-3.0.6\\vlc.exe", textBoxRtspurl.Text + " --network-caching=" + CacheTime);
+            // il faudra prévoir un endroit, une boite de dialogue pour ouvrir
         }
 
         public void ModifieStatutServer()
@@ -212,31 +209,9 @@ namespace exempleAndruino
         //
         //------------------------------------------------------------------------------------------------------------
 
-        /*private void ButtonStart_Click(object sender, EventArgs e)
-        {
-            //PourReseau.ipAddress = IPAddress.Parse(AdressBox.Text);
-            // le port est déjà spécifié dans PortValide
-            //PourReseau.StartClient();
-            TopNouvelOrdre.Start();
-
-            // pour forcer l'envoy des valeur du joyStick
-            PreviousMessageHexa = "";
-        }  */
-
         private void Envoyer_Click(object sender, EventArgs e)
         {
             PourReseau.Send(TextAEnvoyer.Text);
-        }
-
-        /*private void ButtonDeconnect_Click(object sender, EventArgs e)
-        {
-            TopNouvelOrdre.Stop();
-            PourReseau.Shut();
-        }*/
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
         }
 
         //------------------------------------------------------------------------------------------------------------
@@ -250,16 +225,18 @@ namespace exempleAndruino
         private void RtspStart_Click(object sender, EventArgs e)
         {
             PourReseau.VideoRequest();
-            /*
-             simplification rtsp
-            VLC_View.playlist.add(textBoxRtspurl.Text);
-            VLC_View.playlist.play();
-            */
         }
 
         private void RtspStop_Click(object sender, EventArgs e)
         {
             PourReseau.VideoStop();
+            try
+            {
+                processVLC.Kill();
+            }
+            catch (Exception ex)
+            {  // bof m'en fout 
+            }
         }
 
         //------------------------------------------------------------------------------------------------------------
@@ -327,7 +304,7 @@ namespace exempleAndruino
         {
             String MessageHexa;
 
-            MessageHexa = "M1:" + PourReseau.ByteToHex((byte)(JoyY * 2.55F)) + ">   M2:" 
+            MessageHexa = "M1:" + PourReseau.ByteToHex((byte)(JoyY * 2.55F)) + ">   M2:"
                         + PourReseau.ByteToHex((byte)(JoyX * 2.55F)) + ">   M3:"
                         + PourReseau.ByteToHex((byte)(trackBarLight.Value * 2.55F)) + ">   ";
             MessageHexa = PourReseau.StringToHex(MessageHexa);
@@ -349,7 +326,7 @@ namespace exempleAndruino
 
         private void ChangeLightState(object sender, EventArgs e)
         {
-            if ( checkBoxLight.Checked )
+            if (checkBoxLight.Checked)
             {
                 PourReseau.SendCapteur("FlashLightON");
             }
@@ -366,7 +343,7 @@ namespace exempleAndruino
         //------------------------------------------------------------------------------------------------------------
 
         private void PortValide(object sender, EventArgs e)
-        {    PortValide();  }
+        { PortValide(); }
 
         private void PortValide()
         {
@@ -450,7 +427,11 @@ namespace exempleAndruino
             SaveVal("Passw", PasswTextBox.Text);
             SaveVal("Video", textBoxRtspurl.Text);
         }
-       
+
+        private void panel2_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
 
         private void SaveVal(String Key, String Value)
         {

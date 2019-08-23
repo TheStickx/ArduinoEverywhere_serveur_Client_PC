@@ -1,11 +1,7 @@
-﻿
-
-namespace exempleAndruino
+﻿namespace DroneCMD
 {
-    partial class Form1
+    partial class DroneUI
     {
-
-
         /// <summary>
         /// Variable nécessaire au concepteur.
         /// </summary>
@@ -33,10 +29,6 @@ namespace exempleAndruino
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            this.TopNouvelOrdre = new System.Windows.Forms.Timer(this.components);
-            this.RtspStart = new System.Windows.Forms.Button();
-            this.RtspStop = new System.Windows.Forms.Button();
             this.Options = new System.Windows.Forms.TabControl();
             this.Serveur = new System.Windows.Forms.TabPage();
             this.labelPassw = new System.Windows.Forms.Label();
@@ -52,7 +44,9 @@ namespace exempleAndruino
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.NomDuFlux = new System.Windows.Forms.TextBox();
+            this.RtspStop = new System.Windows.Forms.Button();
             this.textBoxRtspurl = new System.Windows.Forms.TextBox();
+            this.RtspStart = new System.Windows.Forms.Button();
             this.MsgTest = new System.Windows.Forms.TabPage();
             this.panel3 = new System.Windows.Forms.Panel();
             this.TexteRecu = new System.Windows.Forms.TextBox();
@@ -60,17 +54,16 @@ namespace exempleAndruino
             this.TextAEnvoyer = new System.Windows.Forms.TextBox();
             this.Erreures = new System.Windows.Forms.TabPage();
             this.labelError = new System.Windows.Forms.TextBox();
-            this.panel1 = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.trackBarLight = new System.Windows.Forms.TrackBar();
             this.checkBoxLight = new System.Windows.Forms.CheckBox();
             this.pictureBlueToot = new System.Windows.Forms.PictureBox();
             this.pictureServer = new System.Windows.Forms.PictureBox();
             this.GraphGauge = new System.Windows.Forms.PictureBox();
-            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.panel1 = new System.Windows.Forms.Panel();
             this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
-            this.panel4 = new System.Windows.Forms.Panel();
-            this.VLC_View = new AxAXVLC.AxVLCPlugin2();
-            this.trackBarLight = new System.Windows.Forms.TrackBar();
+            this.TopNouvelOrdre = new System.Windows.Forms.Timer(this.components);
+            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.Options.SuspendLayout();
             this.Serveur.SuspendLayout();
             this.Video.SuspendLayout();
@@ -79,39 +72,12 @@ namespace exempleAndruino
             this.panel3.SuspendLayout();
             this.Erreures.SuspendLayout();
             this.panel2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBarLight)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBlueToot)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureServer)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.GraphGauge)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
-            this.panel4.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.VLC_View)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBarLight)).BeginInit();
             this.SuspendLayout();
-            // 
-            // TopNouvelOrdre
-            // 
-            this.TopNouvelOrdre.Interval = 300;
-            this.TopNouvelOrdre.Tick += new System.EventHandler(this.TickRelanceOrdre);
-            // 
-            // RtspStart
-            // 
-            this.RtspStart.Location = new System.Drawing.Point(514, 15);
-            this.RtspStart.Name = "RtspStart";
-            this.RtspStart.Size = new System.Drawing.Size(96, 22);
-            this.RtspStart.TabIndex = 8;
-            this.RtspStart.Text = "video start";
-            this.RtspStart.UseVisualStyleBackColor = true;
-            this.RtspStart.Click += new System.EventHandler(this.RtspStart_Click);
-            // 
-            // RtspStop
-            // 
-            this.RtspStop.Location = new System.Drawing.Point(514, 41);
-            this.RtspStop.Name = "RtspStop";
-            this.RtspStop.Size = new System.Drawing.Size(96, 23);
-            this.RtspStop.TabIndex = 10;
-            this.RtspStop.Text = "video stop";
-            this.RtspStop.UseVisualStyleBackColor = true;
-            this.RtspStop.Click += new System.EventHandler(this.RtspStop_Click);
             // 
             // Options
             // 
@@ -123,8 +89,8 @@ namespace exempleAndruino
             this.Options.Location = new System.Drawing.Point(0, 0);
             this.Options.Name = "Options";
             this.Options.SelectedIndex = 0;
-            this.Options.Size = new System.Drawing.Size(833, 108);
-            this.Options.TabIndex = 14;
+            this.Options.Size = new System.Drawing.Size(842, 108);
+            this.Options.TabIndex = 15;
             // 
             // Serveur
             // 
@@ -137,7 +103,7 @@ namespace exempleAndruino
             this.Serveur.Location = new System.Drawing.Point(4, 22);
             this.Serveur.Name = "Serveur";
             this.Serveur.Padding = new System.Windows.Forms.Padding(3);
-            this.Serveur.Size = new System.Drawing.Size(825, 82);
+            this.Serveur.Size = new System.Drawing.Size(834, 82);
             this.Serveur.TabIndex = 0;
             this.Serveur.Text = "serveur";
             this.Serveur.UseVisualStyleBackColor = true;
@@ -207,7 +173,7 @@ namespace exempleAndruino
             this.Video.Location = new System.Drawing.Point(4, 22);
             this.Video.Name = "Video";
             this.Video.Padding = new System.Windows.Forms.Padding(3);
-            this.Video.Size = new System.Drawing.Size(825, 82);
+            this.Video.Size = new System.Drawing.Size(834, 82);
             this.Video.TabIndex = 1;
             this.Video.Text = "Video";
             this.Video.UseVisualStyleBackColor = true;
@@ -266,6 +232,16 @@ namespace exempleAndruino
             this.NomDuFlux.Size = new System.Drawing.Size(343, 20);
             this.NomDuFlux.TabIndex = 14;
             // 
+            // RtspStop
+            // 
+            this.RtspStop.Location = new System.Drawing.Point(514, 41);
+            this.RtspStop.Name = "RtspStop";
+            this.RtspStop.Size = new System.Drawing.Size(96, 23);
+            this.RtspStop.TabIndex = 10;
+            this.RtspStop.Text = "video stop";
+            this.RtspStop.UseVisualStyleBackColor = true;
+            this.RtspStop.Click += new System.EventHandler(this.RtspStop_Click);
+            // 
             // textBoxRtspurl
             // 
             this.textBoxRtspurl.Location = new System.Drawing.Point(156, 41);
@@ -273,6 +249,16 @@ namespace exempleAndruino
             this.textBoxRtspurl.Size = new System.Drawing.Size(343, 20);
             this.textBoxRtspurl.TabIndex = 13;
             this.textBoxRtspurl.Text = "rtsp://192.168.1.133:5540/ch0";
+            // 
+            // RtspStart
+            // 
+            this.RtspStart.Location = new System.Drawing.Point(514, 15);
+            this.RtspStart.Name = "RtspStart";
+            this.RtspStart.Size = new System.Drawing.Size(96, 22);
+            this.RtspStart.TabIndex = 8;
+            this.RtspStart.Text = "video start";
+            this.RtspStart.UseVisualStyleBackColor = true;
+            this.RtspStart.Click += new System.EventHandler(this.RtspStart_Click);
             // 
             // MsgTest
             // 
@@ -282,7 +268,7 @@ namespace exempleAndruino
             this.MsgTest.Location = new System.Drawing.Point(4, 22);
             this.MsgTest.Name = "MsgTest";
             this.MsgTest.Padding = new System.Windows.Forms.Padding(3);
-            this.MsgTest.Size = new System.Drawing.Size(825, 82);
+            this.MsgTest.Size = new System.Drawing.Size(834, 82);
             this.MsgTest.TabIndex = 2;
             this.MsgTest.Text = "Messages Test";
             this.MsgTest.UseVisualStyleBackColor = true;
@@ -293,7 +279,7 @@ namespace exempleAndruino
             this.panel3.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel3.Location = new System.Drawing.Point(3, 37);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(819, 42);
+            this.panel3.Size = new System.Drawing.Size(828, 42);
             this.panel3.TabIndex = 8;
             // 
             // TexteRecu
@@ -302,7 +288,7 @@ namespace exempleAndruino
             this.TexteRecu.Location = new System.Drawing.Point(0, 0);
             this.TexteRecu.Multiline = true;
             this.TexteRecu.Name = "TexteRecu";
-            this.TexteRecu.Size = new System.Drawing.Size(819, 42);
+            this.TexteRecu.Size = new System.Drawing.Size(828, 42);
             this.TexteRecu.TabIndex = 8;
             // 
             // Envoyer
@@ -329,7 +315,7 @@ namespace exempleAndruino
             this.Erreures.Location = new System.Drawing.Point(4, 22);
             this.Erreures.Name = "Erreures";
             this.Erreures.Padding = new System.Windows.Forms.Padding(3);
-            this.Erreures.Size = new System.Drawing.Size(825, 82);
+            this.Erreures.Size = new System.Drawing.Size(834, 82);
             this.Erreures.TabIndex = 3;
             this.Erreures.Text = "Erreures";
             this.Erreures.UseVisualStyleBackColor = true;
@@ -341,20 +327,8 @@ namespace exempleAndruino
             this.labelError.Multiline = true;
             this.labelError.Name = "labelError";
             this.labelError.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.labelError.Size = new System.Drawing.Size(819, 76);
+            this.labelError.Size = new System.Drawing.Size(828, 76);
             this.labelError.TabIndex = 0;
-            // 
-            // panel1
-            // 
-            this.panel1.BackColor = System.Drawing.SystemColors.ButtonShadow;
-            this.panel1.Location = new System.Drawing.Point(12, 137);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(100, 100);
-            this.panel1.TabIndex = 16;
-            this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.DrawJoy);
-            this.panel1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.MoveJoyBegin);
-            this.panel1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.MoveJoy);
-            this.panel1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.MoveJoyEnd);
             // 
             // panel2
             // 
@@ -367,25 +341,32 @@ namespace exempleAndruino
             this.panel2.Dock = System.Windows.Forms.DockStyle.Left;
             this.panel2.Location = new System.Drawing.Point(0, 108);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(133, 602);
-            this.panel2.TabIndex = 17;
-            this.panel2.Paint += new System.Windows.Forms.PaintEventHandler(this.panel2_Paint);
+            this.panel2.Size = new System.Drawing.Size(133, 601);
+            this.panel2.TabIndex = 18;
+            // 
+            // trackBarLight
+            // 
+            this.trackBarLight.Location = new System.Drawing.Point(12, 393);
+            this.trackBarLight.Maximum = 100;
+            this.trackBarLight.Name = "trackBarLight";
+            this.trackBarLight.Size = new System.Drawing.Size(98, 45);
+            this.trackBarLight.TabIndex = 21;
             // 
             // checkBoxLight
             // 
             this.checkBoxLight.AutoSize = true;
+            this.checkBoxLight.Enabled = false;
             this.checkBoxLight.Location = new System.Drawing.Point(13, 370);
             this.checkBoxLight.Name = "checkBoxLight";
             this.checkBoxLight.Size = new System.Drawing.Size(59, 17);
             this.checkBoxLight.TabIndex = 20;
             this.checkBoxLight.Text = "Phares";
             this.checkBoxLight.UseVisualStyleBackColor = true;
-            this.checkBoxLight.CheckStateChanged += new System.EventHandler(this.ChangeLightState);
+            this.checkBoxLight.Click += new System.EventHandler(this.ChangeLightState);
             // 
             // pictureBlueToot
             // 
-            this.pictureBlueToot.Image = global::exempleAndruino.Properties.Resources.bluetooth_off;
-            this.pictureBlueToot.InitialImage = global::exempleAndruino.Properties.Resources.bluetooth_off;
+            this.pictureBlueToot.Image = global::DroneCMD.Properties.Resources.bluetooth_off;
             this.pictureBlueToot.Location = new System.Drawing.Point(12, 67);
             this.pictureBlueToot.Name = "pictureBlueToot";
             this.pictureBlueToot.Size = new System.Drawing.Size(64, 64);
@@ -395,7 +376,7 @@ namespace exempleAndruino
             // 
             // pictureServer
             // 
-            this.pictureServer.Image = global::exempleAndruino.Properties.Resources.serveur_off;
+            this.pictureServer.Image = global::DroneCMD.Properties.Resources.serveur_off;
             this.pictureServer.InitialImage = null;
             this.pictureServer.Location = new System.Drawing.Point(12, 6);
             this.pictureServer.Name = "pictureServer";
@@ -412,49 +393,37 @@ namespace exempleAndruino
             this.GraphGauge.TabIndex = 17;
             this.GraphGauge.TabStop = false;
             // 
+            // panel1
+            // 
+            this.panel1.BackColor = System.Drawing.SystemColors.ButtonShadow;
+            this.panel1.Location = new System.Drawing.Point(12, 137);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(100, 100);
+            this.panel1.TabIndex = 16;
+            this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.DrawJoy);
+            this.panel1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.MoveJoyBegin);
+            this.panel1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.MoveJoy);
+            this.panel1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.MoveJoyEnd);
+            // 
             // errorProvider1
             // 
             this.errorProvider1.ContainerControl = this;
             // 
-            // panel4
+            // TopNouvelOrdre
             // 
-            this.panel4.Controls.Add(this.VLC_View);
-            this.panel4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel4.Location = new System.Drawing.Point(133, 108);
-            this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(700, 602);
-            this.panel4.TabIndex = 18;
+            this.TopNouvelOrdre.Interval = 300;
+            this.TopNouvelOrdre.Tick += new System.EventHandler(this.TickRelanceOrdre);
             // 
-            // VLC_View
-            // 
-            this.VLC_View.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.VLC_View.Enabled = true;
-            this.VLC_View.Location = new System.Drawing.Point(0, 0);
-            this.VLC_View.Name = "VLC_View";
-            this.VLC_View.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("VLC_View.OcxState")));
-            this.VLC_View.Size = new System.Drawing.Size(700, 602);
-            this.VLC_View.TabIndex = 0;
-            // 
-            // trackBarLight
-            // 
-            this.trackBarLight.Location = new System.Drawing.Point(12, 393);
-            this.trackBarLight.Maximum = 100;
-            this.trackBarLight.Name = "trackBarLight";
-            this.trackBarLight.Size = new System.Drawing.Size(98, 45);
-            this.trackBarLight.TabIndex = 21;
-            // 
-            // Form1
+            // DroneUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(833, 710);
-            this.Controls.Add(this.panel4);
+            this.ClientSize = new System.Drawing.Size(842, 709);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.Options);
-            this.Name = "Form1";
-            this.Text = "Form1";
+            this.Name = "DroneUI";
+            this.Text = "Drone CMD";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SaveToReg);
-            this.Load += new System.EventHandler(this.Form1_Load);
             this.Options.ResumeLayout(false);
             this.Serveur.ResumeLayout(false);
             this.Serveur.PerformLayout();
@@ -470,55 +439,52 @@ namespace exempleAndruino
             this.Erreures.PerformLayout();
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBarLight)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBlueToot)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureServer)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.GraphGauge)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).EndInit();
-            this.panel4.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.VLC_View)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBarLight)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
-        private System.Windows.Forms.Timer TopNouvelOrdre;
-        private System.Windows.Forms.Button RtspStart;
-        private System.Windows.Forms.Button RtspStop;
+
         private System.Windows.Forms.TabControl Options;
         private System.Windows.Forms.TabPage Serveur;
-        private System.Windows.Forms.TextBox AdressBox;
-        private System.Windows.Forms.TabPage Video;
+        private System.Windows.Forms.Label labelPassw;
+        private System.Windows.Forms.TextBox PasswTextBox;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox textBoxPort;
+        private System.Windows.Forms.TextBox AdressBox;
+        private System.Windows.Forms.TabPage Video;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.TextBox textBoxVideoCache;
+        private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox NomDuFlux;
+        private System.Windows.Forms.Button RtspStop;
         private System.Windows.Forms.TextBox textBoxRtspurl;
+        private System.Windows.Forms.Button RtspStart;
         private System.Windows.Forms.TabPage MsgTest;
+        private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.TextBox TexteRecu;
         private System.Windows.Forms.Button Envoyer;
         private System.Windows.Forms.TextBox TextAEnvoyer;
         private System.Windows.Forms.TabPage Erreures;
-        private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.Panel panel3;
-        private System.Windows.Forms.TextBox TexteRecu;
         private System.Windows.Forms.TextBox labelError;
-        private System.ComponentModel.BackgroundWorker backgroundWorker1;
-        private System.Windows.Forms.ErrorProvider errorProvider1;
-        private System.Windows.Forms.Panel panel4;
-        private System.Windows.Forms.Label labelPassw;
-        private System.Windows.Forms.TextBox PasswTextBox;
-        private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.TextBox textBoxVideoCache;
-        private System.Windows.Forms.PictureBox GraphGauge;
-        private AxAXVLC.AxVLCPlugin2 VLC_View;
-        private System.Windows.Forms.PictureBox pictureServer;
-        private System.Windows.Forms.PictureBox pictureBlueToot;
-        private System.Windows.Forms.CheckBox checkBoxLight;
+        private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.TrackBar trackBarLight;
+        private System.Windows.Forms.CheckBox checkBoxLight;
+        private System.Windows.Forms.PictureBox pictureBlueToot;
+        private System.Windows.Forms.PictureBox pictureServer;
+        private System.Windows.Forms.PictureBox GraphGauge;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.ErrorProvider errorProvider1;
+        private System.Windows.Forms.Timer TopNouvelOrdre;
+        private System.ComponentModel.BackgroundWorker backgroundWorker1;
     }
 }
 
