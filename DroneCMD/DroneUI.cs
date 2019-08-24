@@ -185,7 +185,7 @@ namespace DroneCMD
             System.Threading.Thread.Sleep(500);
             processVLC = Process.Start("vlc.exe", textBoxRtspurl.Text + " --network-caching=" + CacheTime);
             // processVLC = Process.Start("vlc-3.0.6\\vlc.exe", textBoxRtspurl.Text + " --network-caching=" + CacheTime);
-            // il faudra prévoir un endroit, une boite de dialogue pour ouvrir
+            // il faudra prévoir un endroit, une boite de dialogue pour forcer l'emplacement de VLC
         }
 
         public void ModifieStatutServer()
