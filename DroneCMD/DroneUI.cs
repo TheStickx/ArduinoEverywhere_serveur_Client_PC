@@ -275,7 +275,7 @@ namespace DroneCMD
 
             JoyY = Y > 100.0F ? 100.0F : Y < 0.0F ? 0.0F : (float)Y;
 
-            // je sais pas
+            
             panel1.Invalidate();
         }
 
